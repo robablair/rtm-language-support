@@ -27,7 +27,18 @@ export function activate(context: vscode.ExtensionContext) {
 
 	context.subscriptions.push(vscode.languages.registerDefinitionProvider('rtm', {
 		provideDefinition(doc, pos) {
-			return new vscode.Location(doc.uri, new vscode.Position(10,4))
+			const wordRange = doc.getWordRangeAtPosition(pos)
+			const word = doc.getText(wordRange)
+			for (let i = 0; i < doc.lineCount; i++) {
+				const line = doc.lineAt(i)
+				const regex = RegExp(`${word}\\(.*\\) PROC`)
+				const matches = regex.exec(line.text)
+				if (matches !== null && matches.length === 1) {
+					const refPos = new vscode.Position(line.range.start.line, line.range.start.character + matches.index)
+					return new vscode.Location(doc.uri, refPos)
+				}
+			}
+			return new vscode.Location(doc.uri, pos)
 		}
 	}));
 }

@@ -1,0 +1,38 @@
+{
+	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+	"name": "RTM",
+	"patterns": [
+		{
+			"include": "#keywords"
+		},
+		{
+			"include": "#strings"
+		}
+	],
+	"repository": {
+		"keywords": {
+			"patterns": [
+				{
+					"name": "keyword.rtm",
+					"match": "(?<!\\.)\\b(IF|WHILE|DO|END|OVERLAY|CASE|PROC|RETURN|ENDPROC|QUITZUG)\\b(?!\\.)"
+				},
+				{
+					"name": "keyword.rtm",
+					"match": "(?x)\\B\\$(ENTRY|ABORT|DATA|DATA,SHARED|ENTRY|EXT|EXTDATA|EXTRACT|FILE|FILES|INCLUDE|LIVE|LIVEUSER|NAME|NEWCLUSTERS|OPT|PROG|RECORD|SCRNDATA|SNAPSHOT|TEST|TESTUSER|USERDATA)\\b"
+				}
+			]
+		},
+		"strings": {
+			"name": "string.quoted.double.rtm",
+			"begin": "\"",
+			"end": "\"",
+			"patterns": [
+				{
+					"name": "constant.character.escape.rtm",
+					"match": "\\\\."
+				}
+			]
+		}
+	},
+	"scopeName": "source.rtm"
+}

@@ -1,0 +1,49 @@
+{
+    "name": "rtm-language-support",
+    "displayName": "RTM Language Support",
+    "description": "RTM Language Support",
+    "version": "0.0.1",
+    "engines": {
+        "vscode": "^1.48.0"
+    },
+    "categories": [
+        "Programming Languages"
+    ],
+    "activationEvents": [
+        "onCommand:extension.helloWorld",
+        "onLanguage:rtm"
+	],
+    "main": "./out/extension.js",
+    "contributes": {
+        "languages": [
+            {
+                "id": "rtm",
+                "aliases": [
+                    "RTM",
+                    "rtm"
+                ],
+                "extensions": [
+                    ".rtm",
+                    ".zfd"
+                ],
+                "configuration": "./language-configuration.json"
+            }
+        ],
+        "grammars": [
+            {
+                "language": "rtm",
+                "scopeName": "source.rtm",
+                "path": "./syntaxes/rtm.tmLanguage.json"
+            }
+        ],
+        "commands": [
+			{
+				"command": "extension.helloWorld",
+				"title": "Hello World"
+			}
+		]
+    },
+    "dependencies": {
+        "@types/vscode": "^1.48.0"
+    }
+}

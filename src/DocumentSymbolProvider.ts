@@ -13,7 +13,7 @@ const procMatch: SymbolRegex = {
 }
 
 const overlayMatch: SymbolRegex = {
-	symbolRegex: /^\$ENTRY\s+([A-Z](?:\.?\w)*)?/,
+	symbolRegex: /^\$ENTRY\s+([A-Z](?:\.?\w)*)\b(?!\.)/,
 	groupIndex: 1,
 	symbolKind: vscode.SymbolKind.Function
 }

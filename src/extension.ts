@@ -3,11 +3,13 @@
 import * as vscode from 'vscode';
 import { DocumentSymbolProvider } from './DocumentSymbolProvider';
 import { WorkspaceSymbolProvider } from './WorkspaceSymbolProvider';
+import { DefinitionProvider } from './DefinitionProvider';
 
 const selector = { language: 'rtm', scheme: 'file' };
 
 const docSymbolProvider = new DocumentSymbolProvider();
-const workspaceSymbolProvider = new WorkspaceSymbolProvider();
+const workspaceSymbolProvider = new WorkspaceSymbolProvider(docSymbolProvider);
+const definitionProvider = new DefinitionProvider(workspaceSymbolProvider);
 
 export function activate(context: vscode.ExtensionContext) {
 	console.log('Congratulations, your extension "helloworld-sample" is now active!');
@@ -17,7 +19,7 @@ export function activate(context: vscode.ExtensionContext) {
 	}));
 
 	context.subscriptions.push(vscode.languages.registerHoverProvider(selector, {
-		 async provideHover(doc, pos) {
+		async provideHover(doc, pos) {
 			return new vscode.Hover("Test")
 		}
 	}));
@@ -26,17 +28,5 @@ export function activate(context: vscode.ExtensionContext) {
 
 	context.subscriptions.push(vscode.languages.registerWorkspaceSymbolProvider(workspaceSymbolProvider));
 
-	context.subscriptions.push(vscode.languages.registerDefinitionProvider(selector, {
-		async provideDefinition(doc, pos) {
-			const symbols = await docSymbolProvider.provideDocumentSymbols(doc)
-			const wordRange = doc.getWordRangeAtPosition(pos)
-			if (wordRange) {
-				const symbol = symbols.find(x => x.name === doc.getText(wordRange))
-				if (symbol) {
-					return new vscode.Location(doc.uri, symbol.selectionRange.start)
-				}
-			}
-			return new vscode.Location(doc.uri, pos)
-		}
-	}));
+	context.subscriptions.push(vscode.languages.registerDefinitionProvider(selector, definitionProvider));
 }

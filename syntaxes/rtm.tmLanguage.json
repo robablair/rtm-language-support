@@ -7,31 +7,64 @@
 		},
 		{
 			"include": "#strings"
+		},
+		{
+			"include": "#editMasks"
+		},
+		{
+			"include": "#constants"
 		}
 	],
 	"repository": {
 		"keywords": {
 			"patterns": [
 				{
-					"comment": "Control Keywords",
+					"tag": "Keywords.Control",
 					"name": "keyword.rtm",
 					"match": "\\b(?<!\\.)(IF|WHILE|DO|END|OVERLAY|CASE|PROC|RETURN|ENDPROC|QUITZUG)\\b(?!\\.)"
 				},
 				{
-					"comment": "$ Keywords",
+					"tag": "Keywords.Dollar",
 					"name": "keyword.rtm",
 					"match": "^(\\$(ENTRY|ABORT|DATA|DATA,SHARED|ENTRY|EXT|EXTDATA|EXTRACT|FILE|FILES|INCLUDE|LIVE|LIVEUSER|NAME|NEWCLUSTERS|OPT|PROG|RECORD|SCRNDATA|SNAPSHOT|TEST|TESTUSER|USERDATA))\\b(?!\\.)"
+				},
+				{
+					"tag": "Keywords.Function",
+					"name": "support.function.rtm",
+					"match": "OUTIMM"
+				},
+				{
+					"tag": "Keywords.Variable",
+					"name": "support.variable.rtm",
+					"match": "\\B@[1234AB]\\b"
 				}
 			]
 		},
 		"strings": {
 			"name": "string.quoted.double.rtm",
 			"begin": "\"",
-			"end": "\"",
+			"end": "\""
+		},
+		"editMasks": {
 			"patterns": [
 				{
-					"name": "constant.character.escape.rtm",
-					"match": "\\\\."
+					"tag": "EditMasks.Numeric",
+					"name": "entity.name.type.rtm",
+					"match": "([NU])(\\d{1,3})"
+				},
+				{
+					"tag": "EditMasks.Character",
+					"name": "entity.name.type.rtm",
+					"match": "([AX])(\\d{1,3})"
+				}
+			]
+		},
+		"constants": {
+			"patterns": [
+				{
+					"tag": "Constants.Numeric",
+					"name": "constant.numeric.rtm",
+					"match": "\\b(?<![\\.@])\\d+\\b(?!\\.)"
 				}
 			]
 		}

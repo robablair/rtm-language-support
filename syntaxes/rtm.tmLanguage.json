@@ -13,12 +13,14 @@
 		"keywords": {
 			"patterns": [
 				{
+					"comment": "Control Keywords",
 					"name": "keyword.rtm",
-					"match": "(?<!\\.)\\b(IF|WHILE|DO|END|OVERLAY|CASE|PROC|RETURN|ENDPROC|QUITZUG)\\b(?!\\.)"
+					"match": "\\b(?<!\\.)(IF|WHILE|DO|END|OVERLAY|CASE|PROC|RETURN|ENDPROC|QUITZUG)\\b(?!\\.)"
 				},
 				{
+					"comment": "$ Keywords",
 					"name": "keyword.rtm",
-					"match": "(?x)\\B\\$(ENTRY|ABORT|DATA|DATA,SHARED|ENTRY|EXT|EXTDATA|EXTRACT|FILE|FILES|INCLUDE|LIVE|LIVEUSER|NAME|NEWCLUSTERS|OPT|PROG|RECORD|SCRNDATA|SNAPSHOT|TEST|TESTUSER|USERDATA)\\b"
+					"match": "^(\\$(ENTRY|ABORT|DATA|DATA,SHARED|ENTRY|EXT|EXTDATA|EXTRACT|FILE|FILES|INCLUDE|LIVE|LIVEUSER|NAME|NEWCLUSTERS|OPT|PROG|RECORD|SCRNDATA|SNAPSHOT|TEST|TESTUSER|USERDATA))\\b(?!\\.)"
 				}
 			]
 		},

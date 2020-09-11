@@ -1,41 +1,35 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
+import { DocumentSymbolProvider } from './DocumentSymbolProvider';
 
-// this method is called when your extension is activated
-// your extension is activated the very first time the command is executed
+const selector = { language: 'rtm', scheme: 'file' };
+
+const symbolProvider = new DocumentSymbolProvider();
+
 export function activate(context: vscode.ExtensionContext) {
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
 	console.log('Congratulations, your extension "helloworld-sample" is now active!');
 
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
-	// The commandId parameter must match the command field in package.json
 	context.subscriptions.push(vscode.commands.registerCommand('extension.helloWorld', () => {
-		// The code you place here will be executed every time your command is executed
-
-		// Display a message box to the user
 		vscode.window.showInformationMessage('Hello World!');
 	}));
 
-	context.subscriptions.push(vscode.languages.registerHoverProvider('rtm', {
-		provideHover(document, position, token) {
+	context.subscriptions.push(vscode.languages.registerHoverProvider(selector, {
+		 async provideHover(doc, pos) {
 			return new vscode.Hover("Test")
 		}
 	}));
 
-	context.subscriptions.push(vscode.languages.registerDefinitionProvider('rtm', {
-		provideDefinition(doc, pos) {
+	context.subscriptions.push(vscode.languages.registerDocumentSymbolProvider(selector, symbolProvider));
+
+	context.subscriptions.push(vscode.languages.registerDefinitionProvider(selector, {
+		async provideDefinition(doc, pos) {
+			const symbols = await symbolProvider.provideDocumentSymbols(doc)
 			const wordRange = doc.getWordRangeAtPosition(pos)
-			const word = doc.getText(wordRange)
-			for (let i = 0; i < doc.lineCount; i++) {
-				const line = doc.lineAt(i)
-				const regex = RegExp(`${word}\\(.*\\) PROC`)
-				const matches = regex.exec(line.text)
-				if (matches !== null && matches.length === 1) {
-					const refPos = new vscode.Position(line.range.start.line, line.range.start.character + matches.index)
-					return new vscode.Location(doc.uri, refPos)
+			if (wordRange) {
+				const symbol = symbols.find(x => x.name === doc.getText(wordRange))
+				if (symbol) {
+					return new vscode.Location(doc.uri, symbol.selectionRange.start)
 				}
 			}
 			return new vscode.Location(doc.uri, pos)

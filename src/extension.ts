@@ -2,10 +2,12 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 import { DocumentSymbolProvider } from './DocumentSymbolProvider';
+import { WorkspaceSymbolProvider } from './WorkspaceSymbolProvider';
 
 const selector = { language: 'rtm', scheme: 'file' };
 
-const symbolProvider = new DocumentSymbolProvider();
+const docSymbolProvider = new DocumentSymbolProvider();
+const workspaceSymbolProvider = new WorkspaceSymbolProvider();
 
 export function activate(context: vscode.ExtensionContext) {
 	console.log('Congratulations, your extension "helloworld-sample" is now active!');
@@ -20,11 +22,13 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 	}));
 
-	context.subscriptions.push(vscode.languages.registerDocumentSymbolProvider(selector, symbolProvider));
+	context.subscriptions.push(vscode.languages.registerDocumentSymbolProvider(selector, docSymbolProvider));
+
+	context.subscriptions.push(vscode.languages.registerWorkspaceSymbolProvider(workspaceSymbolProvider));
 
 	context.subscriptions.push(vscode.languages.registerDefinitionProvider(selector, {
 		async provideDefinition(doc, pos) {
-			const symbols = await symbolProvider.provideDocumentSymbols(doc)
+			const symbols = await docSymbolProvider.provideDocumentSymbols(doc)
 			const wordRange = doc.getWordRangeAtPosition(pos)
 			if (wordRange) {
 				const symbol = symbols.find(x => x.name === doc.getText(wordRange))

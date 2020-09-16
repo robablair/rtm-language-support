@@ -17,29 +17,35 @@
 			"patterns":[
 				{
 					"name": "comment.line.rtm",
-					"match": "<<.*$"
+					"match": "^\\*.*$"
+				},
+				{
+					"name": "comment.block.rtm",
+					"match": "<<.*?(>>|$)"
 				}
 			]
 		},
 		"keywords": {
 			"patterns": [
 				{
-					"tag": "Keywords.Control",
-					"name": "keyword.rtm",
-					"match": "\\b(?<!\\.)(IF|WHILE|DO|END|OVERLAY|CASE|PROC|RETURN|ENDPROC|QUITZUG)\\b(?!\\.)"
+					"name": "keyword.reserved.rtm",
+					"match": "\\b(?<!\\.)(OVERLAY|PROC|RETURN|ENDPROC|QUITZUG)\\b(?!\\.)"
 				},
 				{
-					"tag": "Keywords.Dollar",
-					"name": "keyword.rtm",
+					"name": "keyword.control.conditional.rtm",
+					"match": "\\b(?<!\\.)(IF|WHILE|THEN|DO|END|CASE|ENDCASE)\\b(?!\\.)"
+				},
+				{
+					"name": "keyword.dollar.rtm",
 					"match": "^(\\$(ENTRY|ABORT|DATA|DATA,SHARED|ENTRY|EXT|EXTDATA|EXTRACT|FILE|FILES|INCLUDE|LIVE|LIVEUSER|NAME|NEWCLUSTERS|OPT|PROG|RECORD|SCRNDATA|SNAPSHOT|TEST|TESTUSER|USERDATA))\\b(?!\\.)"
 				},
 				{
-					"name": "support.function.rtm",
-					"match": "OUTIMM"
+					"name": "support.variable.rtm",
+					"match": "\\B@[1234ABCR](?=\\b|_)"
 				},
 				{
-					"name": "support.variable.rtm",
-					"match": "\\B@[1234AB]\\b"
+					"name": "support.function.rtm",
+					"match": "OUTIMM|READ|WRITE|INDEX"
 				}
 			]
 		},
@@ -53,19 +59,22 @@
 			"end": "(?=^\\$)",
 			"patterns":[
 				{
-					"name": "support.type.rtm.alphanumeric",
+					"include": "#comments"
+				},
+				{
+					"name": "support.type.alphanumeric.rtm",
 					"match":"(?<=\\s)[AX]\\d+\\b"
 				},
 				{
-					"name": "support.type.rtm.numeric",
+					"name": "support.type.numeric.rtm",
 					"match":"(?<=\\s)[NUSFZ][BLP\\-]*\\d+(\\.\\d+)?\\b"
 				},
 				{
-					"name": "support.type.rtm.date",
+					"name": "support.type.date.rtm",
 					"match":"(?<=\\s)D[AUEFDMYNHBL]+\\b"
 				},
 				{
-					"name": "support.type.rtm.codestring",
+					"name": "support.type.codestring.rtm",
 					"begin": "(?<=\\s)(?=C\\^)",
 					"end": "\\^{2}",
 					"patterns":[
@@ -75,7 +84,6 @@
 								"2": {
 									"name": "constant.numeric.rtm"
 								}
-
 							}
 						}
 					]

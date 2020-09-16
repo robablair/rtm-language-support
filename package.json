@@ -12,7 +12,7 @@
     "activationEvents": [
         "onCommand:extension.helloWorld",
         "onLanguage:rtm"
-	],
+    ],
     "main": "./out/extension.js",
     "contributes": {
         "languages": [
@@ -37,11 +37,11 @@
             }
         ],
         "commands": [
-			{
-				"command": "extension.helloWorld",
-				"title": "Hello World"
-			}
-		]
+            {
+                "command": "extension.helloWorld",
+                "title": "Hello World"
+            }
+        ]
     },
     "dependencies": {
         "@types/vscode": "^1.48.0"

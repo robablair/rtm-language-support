@@ -3,33 +3,88 @@
 	"name": "RTM",
 	"patterns": [
 		{
+			"include": "#comments"
+		},
+		{
 			"include": "#keywords"
 		},
 		{
-			"include": "#strings"
+			"include": "#data-area"
 		}
 	],
 	"repository": {
+		"comments": {
+			"patterns":[
+				{
+					"name": "comment.line.rtm",
+					"match": "<<.*$"
+				}
+			]
+		},
 		"keywords": {
 			"patterns": [
 				{
 					"name": "keyword.rtm",
-					"match": "(?<!\\.)\\b(IF|WHILE|DO|END|OVERLAY|CASE|PROC|RETURN|ENDPROC|QUITZUG)\\b(?!\\.)"
+					"match": "\\b(?<!\\.)(IF|WHILE|DO|END|OVERLAY|CASE|PROC|RETURN|ENDPROC|QUITZUG)\\b(?!\\.)"
 				},
 				{
 					"name": "keyword.rtm",
-					"match": "(?x)\\B\\$(ENTRY|ABORT|DATA|DATA,SHARED|ENTRY|EXT|EXTDATA|EXTRACT|FILE|FILES|INCLUDE|LIVE|LIVEUSER|NAME|NEWCLUSTERS|OPT|PROG|RECORD|SCRNDATA|SNAPSHOT|TEST|TESTUSER|USERDATA)\\b"
+					"match": "^(\\$(ENTRY|ABORT|DATA|DATA,SHARED|ENTRY|EXT|EXTDATA|EXTRACT|FILE|FILES|INCLUDE|LIVE|LIVEUSER|NAME|NEWCLUSTERS|OPT|PROG|RECORD|SCRNDATA|SNAPSHOT|TEST|TESTUSER|USERDATA))\\b(?!\\.)"
+				},
+				{
+					"name": "support.function.rtm",
+					"match": "OUTIMM"
+				},
+				{
+					"name": "support.variable.rtm",
+					"match": "\\B@[1234AB]\\b"
 				}
 			]
 		},
 		"strings": {
 			"name": "string.quoted.double.rtm",
 			"begin": "\"",
-			"end": "\"",
+			"end": "\""
+		},
+		"data-area": {
+			"begin": "(?<=^\\$DATA\\b)",
+			"end": "(?=^\\$)",
+			"patterns":[
+				{
+					"name": "support.type.rtm.alphanumeric",
+					"match":"(?<=\\s)[AX]\\d+\\b"
+				},
+				{
+					"name": "support.type.rtm.numeric",
+					"match":"(?<=\\s)[NUSFZ][BLP\\-]*\\d+(\\.\\d+)?\\b"
+				},
+				{
+					"name": "support.type.rtm.date",
+					"match":"(?<=\\s)D[AUEFDMYNHBL]+\\b"
+				},
+				{
+					"name": "support.type.rtm.codestring",
+					"begin": "(?<=\\s)(?=C\\^)",
+					"end": "\\^{2}",
+					"patterns":[
+						{
+							"match": "(\\^)(\\w+)(?=\\^)",
+							"captures": {
+								"2": {
+									"name": "constant.numeric.rtm"
+								}
+
+							}
+						}
+					]
+				}
+			]
+		},
+		"constants": {
 			"patterns": [
 				{
-					"name": "constant.character.escape.rtm",
-					"match": "\\\\."
+					"name": "constant.numeric.rtm",
+					"match": "\\b(?<![\\.@])\\d+\\b(?!\\.)"
 				}
 			]
 		}

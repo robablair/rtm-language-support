@@ -6,15 +6,18 @@
 			"include": "#comments"
 		},
 		{
+			"include": "#data-area"
+		},
+		{
 			"include": "#keywords"
 		},
 		{
-			"include": "#data-area"
+			"include": "#strings"
 		}
 	],
 	"repository": {
 		"comments": {
-			"patterns":[
+			"patterns": [
 				{
 					"name": "comment.line.rtm",
 					"match": "^\\*.*$"
@@ -22,6 +25,10 @@
 				{
 					"name": "comment.block.rtm",
 					"match": "<<.*?(>>|$)"
+				},
+				{
+					"name": "comment.block.header.rtm",
+					"match": "(?<=^RTM\\b).*?$"
 				}
 			]
 		},
@@ -29,23 +36,47 @@
 			"patterns": [
 				{
 					"name": "keyword.reserved.rtm",
-					"match": "\\b(?<!\\.)(OVERLAY|PROC|RETURN|ENDPROC|QUITZUG)\\b(?!\\.)"
+					"match": "\\b(?<!\\.)(RTM|OVERLAY|PROC|RETURN|ENDPROC|QUITZUG)\\b(?!\\.)"
 				},
 				{
-					"name": "keyword.control.conditional.rtm",
-					"match": "\\b(?<!\\.)(IF|WHILE|THEN|DO|END|CASE|ENDCASE)\\b(?!\\.)"
+					"name": "keyword.control.block.rtm",
+					"match": "\\b(?<!\\.)(DO|END|CASE|ENDCASE|PROC|ENDPROC|ALWAYS|NEVER|UNTIL|WHILE|REPEAT|EXIT)\\b(?!\\.)"
+				},
+				{
+					"name": "keyword.control.condition.rtm",
+					"match": "\\b(?<!\\.)(IF|THEN|ELSE|AND|OR)\\b(?!\\.)"
 				},
 				{
 					"name": "keyword.dollar.rtm",
 					"match": "^(\\$(ENTRY|ABORT|DATA|DATA,SHARED|ENTRY|EXT|EXTDATA|EXTRACT|FILE|FILES|INCLUDE|LIVE|LIVEUSER|NAME|NEWCLUSTERS|OPT|PROG|RECORD|SCRNDATA|SNAPSHOT|TEST|TESTUSER|USERDATA))\\b(?!\\.)"
 				},
 				{
+					"name": "constant.language.io.rtm",
+					"match": "\\b(DOWN|ERASE|CR|BACK|BEEP|CLEAR|LEFT|RIGHT|TABSTOP|UP|FLASH|HI|LO|KEYED|NOABORT)\\b"
+				},
+				{
 					"name": "support.variable.rtm",
 					"match": "\\B@[1234ABCR](?=\\b|_)"
 				},
 				{
-					"name": "support.function.rtm",
-					"match": "OUTIMM|READ|WRITE|INDEX"
+					"name": "support.function.files.rtm",
+					"match": "\\b(ALLOC|COPYR|INDEX|LOCK|NOGROUP|PACK|READ|READLOCK|REF|RELEASE|SEGPTR|TESTLOCK|UNLOCK|WRITE|UNPACK|BNUM|DELETE)\\b"
+				},
+				{
+					"name": "support.function.data.rtm",
+					"match": "\\b(INIT|APPLY)\\b"
+				},
+				{
+					"name": "support.function.strings.rtm",
+					"match": "\\b(CONCAT|CONVERT|EXT|LENGTH|MATCH|TRANSLATE|SUBSTR)\\b"
+				},
+				{
+					"name": "support.function.arithmetic.rtm",
+					"match": "\\b(ABS|EXP2|MAX|MIN|RANDOM|REM)\\b"
+				},
+				{
+					"name": "support.function.io.rtm",
+					"match": "\\b(ALTSCR|DISCARD|ERROR|RC|TRUNC|WAIT|VID|IN|INFLD|INOPT|SETOPT|VALID|OUT|SETERR|FIXERRS|OUTIF|OUTIMM|OUTONLY)\\b"
 				}
 			]
 		},
@@ -57,27 +88,27 @@
 		"data-area": {
 			"begin": "(?<=^\\$DATA\\b)",
 			"end": "(?=^\\$)",
-			"patterns":[
+			"patterns": [
 				{
 					"include": "#comments"
 				},
 				{
 					"name": "support.type.alphanumeric.rtm",
-					"match":"(?<=\\s)[AX]\\d+\\b"
+					"match": "(?<=\\s)[AX]\\d+\\b"
 				},
 				{
 					"name": "support.type.numeric.rtm",
-					"match":"(?<=\\s)[NUSFZ][BLP\\-]*\\d+(\\.\\d+)?\\b"
+					"match": "(?<=\\s)[NUSFZ][BLP\\-]*\\d+(\\.\\d+)?\\b"
 				},
 				{
 					"name": "support.type.date.rtm",
-					"match":"(?<=\\s)D[AUEFDMYNHBL]+\\b"
+					"match": "(?<=\\s)D[AUEFDMYNHBL]+\\b"
 				},
 				{
 					"name": "support.type.codestring.rtm",
 					"begin": "(?<=\\s)(?=C\\^)",
 					"end": "\\^{2}",
-					"patterns":[
+					"patterns": [
 						{
 							"match": "(\\^)(\\w+)(?=\\^)",
 							"captures": {

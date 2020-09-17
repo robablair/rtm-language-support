@@ -1,0 +1,35 @@
+CALL  ZUGLIB  FILE DEFINITION DESCRIPTION
+
+$FILE FIRST.FILE.DEF
+
+TABSIZE=20
+
+RECLEN=384
+
+KEYLEN0=2         << INDEX 0
+
+INXTYP1=SEQN      << INDEX 1
+KEYLEN1=22
+
+$TEST             FILE=*FILNM MAXRECS=2000
+
+AVGENT1=24.0
+
+$LIVE             FILE=$FILNM MAXRECS=11800000
+                              INXREC0=5000000
+                              INXREC1=5600000
+
+AVGENT1=24.0
+OFLISTB=30
+BFLISTB=30
+
+W$CLUSTER MAIN.CLUSTER [
+    FIELD.1                 C^N^Y^^     << field
+
+    $OPT
+        AP.BRKR.REF         A20  VAR
+        AP.DB.ACCT          N8   OPT
+    ]
+
+$RECORD
+    MAIN.CLUSTER

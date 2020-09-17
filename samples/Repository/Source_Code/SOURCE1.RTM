@@ -1,0 +1,45 @@
+RTM Description of the overlays
+
+$ENTRY FIRST.OVERLAY
+
+$FILES
+  FIRST.FILE.DEF
+  SECOND.FILE.DEF
+
+$DATA
+  CHAR.VAR1                 A100            << This is a 64-character set array
+  CHAR.VAR2                 X100            << This is a 256-character set array
+  N.NUM.VAR1                N12
+  N.NUM.VAR2                NP12
+  N.NUM.VAR3                N-12
+  U.NUM.VAR1                U12
+  U.NUM.VAR2                UP12
+  U.NUM.VAR3                U-12
+  S.NUM.VAR1                S8
+  S.NUM.VAR2                S6.2
+  S.NUM.VAR3                SB6.2
+  S.NUM.VAR4                SL6.2
+  S.NUM.VAR5                SP6.2
+  F.NUM.VAR1                F6.2
+  Z.NUM.VAR1                Z6.2
+  DATE.VAR1                 DD
+  DATE.VAR2                 DM
+  DATE.VAR3                 DYBL
+  DATE.VAR4                 DFHBL
+  DATE.VAR5                 DYLN
+  CODE.STRING1              C^JAN^FEB^MAR^APR^MAY^JUN^JUL^AUG^SEP^OCT^NOV^DEC^^
+  CODE.STRING2              C^MONDAY^
+                             ^TUESDAY^
+                             ^WEDNESDAY^
+                             ^THURSDAY^
+                             ^FRIDAY^
+                             ^SATURDAY^
+                             ^SUNDAY^^
+
+$EXT
+  SECOND.OVERLAY
+
+$PROG()
+  @4 _
+  SECOND.OVERLAY()
+RETURN

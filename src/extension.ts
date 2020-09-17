@@ -9,7 +9,7 @@ const selector = { language: 'rtm', scheme: 'file' };
 
 const docSymbolProvider = new DocumentSymbolProvider();
 const workspaceSymbolProvider = new WorkspaceSymbolProvider(docSymbolProvider);
-const definitionProvider = new DefinitionProvider(workspaceSymbolProvider);
+const definitionProvider = new DefinitionProvider(docSymbolProvider);
 
 export function activate(context: vscode.ExtensionContext) {
 	console.log('Congratulations, your extension "helloworld-sample" is now active!');

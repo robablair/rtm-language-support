@@ -11,7 +11,7 @@ export class WorkspaceSymbolProvider implements vscode.WorkspaceSymbolProvider<v
 
     async provideWorkspaceSymbols(query: string) {
         const workspaceSymbols: vscode.SymbolInformation[] = [];
-        const files = await vscode.workspace.findFiles('**/*.rtm');
+        const files = await vscode.workspace.findFiles('**/*.RTM');
         for await (const file of files) {
             const doc = await vscode.workspace.openTextDocument(file);
             const docSymbols = await this._docSymbolProvider.provideDocumentSymbols(doc);

@@ -20,7 +20,15 @@ export function activate(context: vscode.ExtensionContext) {
 
 	context.subscriptions.push(vscode.languages.registerHoverProvider(selector, {
 		async provideHover(doc, pos) {
-			return new vscode.Hover("Test")
+        const symbols = await workspaceSymbolProvider.provideWorkspaceDocumentSymbols();
+        const wordRange = doc.getWordRangeAtPosition(pos);
+         if (wordRange) {
+            const symbol = symbols.find(x => x.name === doc.getText(wordRange));
+            if (symbol) {
+							return new vscode.Hover(symbol.detail);
+            }
+        }
+        return null;
 		}
 	}));
 

@@ -36,47 +36,47 @@
 			"patterns": [
 				{
 					"name": "keyword.reserved.rtm",
-					"match": "\\b(?<!\\.)(RTM|OVERLAY|PROC|RETURN|ENDPROC|QUITZUG)\\b(?!\\.)"
+					"match": "(?<=\\b|_)(?<!\\.)(?<!\\.)(RTM|OVERLAY|PROC|RETURN|ENDPROC|QUITZUG)(?=\\b|_)(?!\\.)"
 				},
 				{
 					"name": "keyword.control.block.rtm",
-					"match": "\\b(?<!\\.)(DO|END|CASE|ENDCASE|PROC|ENDPROC|ALWAYS|NEVER|UNTIL|WHILE|REPEAT|EXIT)\\b(?!\\.)"
+					"match": "(?<=\\b|_)(?<!\\.)(?<!\\.)(DO|END|CASE|ENDCASE|PROC|ENDPROC|ALWAYS|NEVER|UNTIL|WHILE|REPEAT|EXIT)(?=\\b|_)(?!\\.)"
 				},
 				{
 					"name": "keyword.control.condition.rtm",
-					"match": "\\b(?<!\\.)(IF|THEN|ELSE|AND|OR)\\b(?!\\.)"
+					"match": "(?<=\\b|_)(?<!\\.)(?<!\\.)(IF|THEN|ELSE|AND|OR)(?=\\b|_)(?!\\.)"
 				},
 				{
 					"name": "keyword.dollar.rtm",
-					"match": "^(\\$(ENTRY|ABORT|DATA|DATA,SHARED|ENTRY|EXT|EXTDATA|EXTRACT|FILE|FILES|INCLUDE|LIVE|LIVEUSER|NAME|NEWCLUSTERS|OPT|PROG|RECORD|SCRNDATA|SNAPSHOT|TEST|TESTUSER|USERDATA))\\b(?!\\.)"
+					"match": "^(\\$(ENTRY|ABORT|DATA|DATA,SHARED|ENTRY|EXT|EXTDATA|EXTRACT|FILE|FILES|INCLUDE|LIVE|LIVEUSER|NAME|NEWCLUSTERS|OPT|PROG|RECORD|SCRNDATA|SNAPSHOT|TEST|TESTUSER|USERDATA))(?=\\b|_)(?!\\.)"
 				},
 				{
 					"name": "constant.language.io.rtm",
-					"match": "\\b(DOWN|ERASE|CR|BACK|BEEP|CLEAR|LEFT|RIGHT|TABSTOP|UP|FLASH|HI|LO|KEYED|NOABORT)\\b"
+					"match": "(?:\\b|_\\K)(DOWN|ERASE|CR|BACK|BEEP|CLEAR|LEFT|RIGHT|TABSTOP|UP|FLASH|HI|LO|KEYED|NOABORT)(?=\\b|_)(?!\\.)"
 				},
 				{
 					"name": "support.variable.rtm",
-					"match": "\\B@[1234ABCR](?=\\b|_)"
+					"match": "(?<=\\b|_)(?<!\\.)B@[1234ABCR](?=\\b|_)"
 				},
 				{
 					"name": "support.function.files.rtm",
-					"match": "\\b(ALLOC|COPYR|INDEX|LOCK|NOGROUP|PACK|READ|READLOCK|REF|RELEASE|SEGPTR|TESTLOCK|UNLOCK|WRITE|UNPACK|BNUM|DELETE)\\b"
+					"match": "(?<=\\b|_)(?<!\\.)(?!\\.)(ALLOC|COPYR|INDEX|LOCK|NOGROUP|PACK|READ|READLOCK|REF|RELEASE|SEGPTR|TESTLOCK|UNLOCK|WRITE|UNPACK|BNUM|DELETE)(?=\\b|_)"
 				},
 				{
 					"name": "support.function.data.rtm",
-					"match": "\\b(INIT|APPLY)\\b"
+					"match": "(?<=\\b|_)(?<!\\.)(INIT|APPLY)(?=\\b|_)"
 				},
 				{
 					"name": "support.function.strings.rtm",
-					"match": "\\b(CONCAT|CONVERT|EXT|LENGTH|MATCH|TRANSLATE|SUBSTR)\\b"
+					"match": "(?<=\\b|_)(?<!\\.)(CONCAT|CONVERT|EXT|LENGTH|MATCH|TRANSLATE|SUBSTR)(?=\\b|_)"
 				},
 				{
 					"name": "support.function.arithmetic.rtm",
-					"match": "\\b(ABS|EXP2|MAX|MIN|RANDOM|REM)\\b"
+					"match": "(?<=\\b|_)(?<!\\.)(ABS|EXP2|MAX|MIN|RANDOM|REM)(?=\\b|_)"
 				},
 				{
 					"name": "support.function.io.rtm",
-					"match": "\\b(ALTSCR|DISCARD|ERROR|RC|TRUNC|WAIT|VID|IN|INFLD|INOPT|SETOPT|VALID|OUT|SETERR|FIXERRS|OUTIF|OUTIMM|OUTONLY)\\b"
+					"match": "(?<=\\b|_)(?<!\\.)(ALTSCR|DISCARD|ERROR|RC|TRUNC|WAIT|VID|IN|INFLD|INOPT|SETOPT|VALID|OUT|SETERR|FIXERRS|OUTIF|OUTIMM|OUTONLY)(?=\\b|_)"
 				}
 			]
 		},

@@ -36,10 +36,11 @@ export class DocumentSymbolProvider implements vscode.DocumentSymbolProvider {
 		let lineNo = 0;
 		for (lineNo; lineNo < lines.length; lineNo++) {
 			const line = lines[lineNo];
-			length += line.length;
+			length += line.length+2;
 			if (length > position)
 					break;
 		}
+		length -= 2;
 		const column = position - (length - lines[lineNo].length);
 		return new vscode.Position(lineNo, column)
 	}

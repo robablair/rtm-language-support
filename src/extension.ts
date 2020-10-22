@@ -25,7 +25,7 @@ export function activate(context: vscode.ExtensionContext) {
          if (wordRange) {
             const symbol = symbols.find(x => x.name === doc.getText(wordRange));
             if (symbol) {
-							return new vscode.Hover(symbol.detail);
+				return new vscode.Hover(symbol.detail);
             }
         }
         return null;

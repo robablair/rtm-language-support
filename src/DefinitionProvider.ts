@@ -1,40 +1,42 @@
 import * as vscode from 'vscode';
-import { DocumentSymbolProvider } from './DocumentSymbolProvider';
-
-type DocFileSymbol = {
-    uri: vscode.Uri,
-    symbol: vscode.DocumentSymbol
-}
+import { DocumentItem, WorkspaceSymbolService } from './WorkspaceSymbolService';
 
 export class DefinitionProvider implements vscode.DefinitionProvider {
 
-    private _docSymbolProvider: DocumentSymbolProvider
+    private _workspaceSymbolContainer: WorkspaceSymbolService
 
-    constructor(documentSymbolProvider: DocumentSymbolProvider) {
-        this._docSymbolProvider = documentSymbolProvider;
+    constructor(workspaceSymbolContainer: WorkspaceSymbolService) {
+        this._workspaceSymbolContainer = workspaceSymbolContainer;
     }
 
     async provideDefinition(doc: vscode.TextDocument, pos: vscode.Position) {
-        const docSymbols: DocFileSymbol[] = [];
-        const files = await vscode.workspace.findFiles('**/*.RTM');
-        for await (const file of files) {
-            const doc = await vscode.workspace.openTextDocument(file);
-            const temp = await this._docSymbolProvider.provideDocumentSymbols(doc)
-            docSymbols.push(...temp.map(x => {
-                const docFile: DocFileSymbol = {
-                    uri: doc.uri,
-                    symbol: x
-                }
-                return docFile;
-            }));
-        }
-        const wordRange = doc.getWordRangeAtPosition(pos);
-        if (wordRange) {
-            const symbol = docSymbols[0].symbol.children.find(x => x.name === doc.getText(wordRange));
-            if (symbol) {
-                return new vscode.Location(docSymbols[0].uri, symbol.selectionRange);
-            }
+        const allSymbols = await this._workspaceSymbolContainer.getSymbols();
+        const docSymbols = allSymbols.filter(x => x.documentUri.path === doc.uri.path);
+        const wordAtPos = doc.getWordRangeAtPosition(pos);
+        if (wordAtPos) {
+            this.findDefinitionOfVariable(wordAtPos, docSymbols, allSymbols);
         }
         return new vscode.Location(doc.uri, pos);
+    }
+
+    private findDefinitionOfVariable(wordRange: vscode.Range, docItems: DocumentItem[], allDocItems: DocumentItem[]) {
+        // const entries = docItems.filter(x => x.name === '$ENTRY')
+        // const entry = entries.find(x => x.range)
+        // const dataArea = topParent.children.find(x => x.name === '$DATA');
+        // let definition = dataArea?.children.find(x => x.name === docItem.name);
+        // if (definition)
+        //     return definition;
+        // //todo: look in includes
+        return null;
+    }
+
+    private flattenDocumentSymbols(symbols: DocumentItem[]) {
+        let children: DocumentItem[] = [];
+        children = symbols;
+        do {
+            children = children.flatMap(x => x.children);
+            symbols.push(...children)
+        } while (children.some(x => x.children.length > 0));
+        return symbols;
     }
 }

@@ -1,22 +1,23 @@
 import * as vscode from 'vscode';
-import { DocumentSymbolProvider } from './DocumentSymbolProvider';
+import { DocumentItem, WorkspaceSymbolService } from './WorkspaceSymbolService';
 
 export class WorkspaceSymbolProvider implements vscode.WorkspaceSymbolProvider<vscode.SymbolInformation> {
 
-    private _docSymbolProvider: DocumentSymbolProvider
+    private _workspaceSymbolContainer: WorkspaceSymbolService
 
-    constructor(docSymbolProvider: DocumentSymbolProvider) {
-        this._docSymbolProvider = docSymbolProvider;
+    constructor(workspaceSymbolContainer: WorkspaceSymbolService) {
+        this._workspaceSymbolContainer = workspaceSymbolContainer;
     }
 
     async provideWorkspaceSymbols(query: string) {
-        const workspaceSymbols: vscode.SymbolInformation[] = [];
-        const files = await vscode.workspace.findFiles('**/*.RTM');
-        for await (const file of files) {
-            const doc = await vscode.workspace.openTextDocument(file);
-            const docSymbols = await this._docSymbolProvider.provideDocumentSymbols(doc);
-            workspaceSymbols.push(...docSymbols.map(s => new vscode.SymbolInformation(s.name, s.kind, '', new vscode.Location(doc.uri, s.selectionRange))))
-        }
-        return workspaceSymbols;
+        const allDocSymbols = await this._workspaceSymbolContainer.getSymbols();
+        const allSymbolInfo = allDocSymbols.flatMap(x => x.toSymbolInformation());
+        return allSymbolInfo;
+    }
+
+    private toSymbolInformation(docUri: vscode.Uri, symbol: vscode.DocumentSymbol, parentSymbol?: vscode.DocumentSymbol) {
+        const loc = new vscode.Location(docUri, symbol.range);
+        const container = parentSymbol?.name ?? '';
+        return new vscode.SymbolInformation(symbol.name, symbol.kind, container, loc);
     }
 }

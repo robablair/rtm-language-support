@@ -7,7 +7,17 @@ $FILES
   SECOND.FILE.DEF
 
 $DATA
+  VAR1                      N12 << VAR2 N10
   CHAR.VAR1                 A100
+  CODE.STRING1              C^JAN^FEB^MAR^APR^MAY^JUN^JUL^AUG^SEP^OCT^NOV^DEC^^ <<comment
+  CODE.STRING2              C^MONDAY^
+                             ^TUESDAY^
+                             ^WEDNESDAY^
+                             ^THURSDAY^
+                             ^FRIDAY^
+*                             ^SATURDAY^^
+                             ^SATURDAY^
+                             ^SUNDAY^^
 
 $PROG()
   @4 _
@@ -15,6 +25,6 @@ $PROG()
 RETURN
 
 FUNCTION1 PROC()
-
+  VAR1_ 10
   RETURN
 ENDPROC

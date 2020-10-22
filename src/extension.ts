@@ -4,18 +4,25 @@ import * as vscode from 'vscode';
 import { DocumentSymbolProvider } from './DocumentSymbolProvider';
 import { WorkspaceSymbolProvider } from './WorkspaceSymbolProvider';
 import { DefinitionProvider } from './DefinitionProvider';
+import { WorkspaceSymbolService } from './WorkspaceSymbolService';
 
 const selector = { language: 'rtm', scheme: 'file' };
 
-const docSymbolProvider = new DocumentSymbolProvider();
-const workspaceSymbolProvider = new WorkspaceSymbolProvider(docSymbolProvider);
-const definitionProvider = new DefinitionProvider(docSymbolProvider);
+const symbolContainer = new WorkspaceSymbolService();
+const docSymbolProvider = new DocumentSymbolProvider(symbolContainer);
+const workspaceSymbolProvider = new WorkspaceSymbolProvider(symbolContainer);
+const definitionProvider = new DefinitionProvider(symbolContainer);
 
 export function activate(context: vscode.ExtensionContext) {
 	console.log('Congratulations, your extension "helloworld-sample" is now active!');
 
 	context.subscriptions.push(vscode.commands.registerCommand('extension.helloWorld', () => {
 		vscode.window.showInformationMessage('Hello World!');
+		const doc = vscode.window.activeTextEditor?.document;
+		if (doc) {
+			docSymbolProvider.provideDocumentSymbols(doc).
+				then(x => console.log(JSON.stringify(x)))
+		}
 	}));
 
 	context.subscriptions.push(vscode.languages.registerHoverProvider(selector, {

@@ -4,31 +4,38 @@ import * as vscode from 'vscode';
 import { DocumentSymbolProvider } from './DocumentSymbolProvider';
 import { WorkspaceSymbolProvider } from './WorkspaceSymbolProvider';
 import { DefinitionProvider } from './DefinitionProvider';
+import { WorkspaceSymbolService } from './WorkspaceSymbolService';
+import { SymbolLocator } from './SymbolLocator';
 
 const selector = { language: 'rtm', scheme: 'file' };
 
-const docSymbolProvider = new DocumentSymbolProvider();
-const workspaceSymbolProvider = new WorkspaceSymbolProvider(docSymbolProvider);
-const definitionProvider = new DefinitionProvider(workspaceSymbolProvider);
+const symbolContainer = new WorkspaceSymbolService();
+const symbolLocator = new SymbolLocator(symbolContainer)
+const docSymbolProvider = new DocumentSymbolProvider(symbolContainer);
+const workspaceSymbolProvider = new WorkspaceSymbolProvider(symbolContainer);
+const definitionProvider = new DefinitionProvider(symbolLocator);
 
 export function activate(context: vscode.ExtensionContext) {
-	console.log('Congratulations, your extension "helloworld-sample" is now active!');
 
-	context.subscriptions.push(vscode.commands.registerCommand('extension.helloWorld', () => {
+	context.subscriptions.push(vscode.commands.registerCommand('extension.getSymbols', () => {
 		vscode.window.showInformationMessage('Hello World!');
+		const doc = vscode.window.activeTextEditor?.document;
+		if (doc) {
+			docSymbolProvider.provideDocumentSymbols(doc).
+				then(x => console.log(JSON.stringify(x)))
+		}
 	}));
 
 	context.subscriptions.push(vscode.languages.registerHoverProvider(selector, {
 		async provideHover(doc, pos) {
-        const symbols = await workspaceSymbolProvider.provideWorkspaceDocumentSymbols();
-        const wordRange = doc.getWordRangeAtPosition(pos);
-         if (wordRange) {
-            const symbol = symbols.find(x => x.name === doc.getText(wordRange));
-            if (symbol) {
-				return new vscode.Hover(symbol.detail);
-            }
-        }
-        return null;
+			const wordRange = doc.getWordRangeAtPosition(pos);
+			if (wordRange) {
+				let def = await symbolLocator.locateSymbol(doc, pos);
+				if (def) {
+					return new vscode.Hover(def.detail);
+				}
+			}
+			return null;
 		}
 	}));
 

@@ -10,7 +10,6 @@
         "Programming Languages"
     ],
     "activationEvents": [
-        "onCommand:extension.helloWorld",
         "onLanguage:rtm"
     ],
     "main": "./out/extension.js",
@@ -38,8 +37,8 @@
         ],
         "commands": [
             {
-                "command": "extension.helloWorld",
-                "title": "Hello World"
+                "command": "extension.getSymbols",
+                "title": "Get Symbols"
             }
         ]
     },

@@ -1,23 +1,18 @@
 import * as vscode from 'vscode';
-import { WorkspaceSymbolProvider } from './WorkspaceSymbolProvider';
+import { SymbolLocator } from './SymbolLocator';
 
 export class DefinitionProvider implements vscode.DefinitionProvider {
 
-    private _workspaceSymbolProvider: WorkspaceSymbolProvider
+    private locator: SymbolLocator
 
-    constructor(workspaceSymbolProvider: WorkspaceSymbolProvider) {
-        this._workspaceSymbolProvider = workspaceSymbolProvider;
+    constructor(locator: SymbolLocator) {
+        this.locator = locator;
     }
 
     async provideDefinition(doc: vscode.TextDocument, pos: vscode.Position) {
-        const symbols = await this._workspaceSymbolProvider.provideWorkspaceSymbols('');
-        const wordRange = doc.getWordRangeAtPosition(pos);
-        if (wordRange) {
-            const symbol = symbols.find(x => x.name === doc.getText(wordRange));
-            if (symbol) {
-                return symbol.location;
-            }
-        }
+        let def = await this.locator.locateSymbol(doc, pos);
+        if (def)
+            return new vscode.Location(def.documentUri, def.selectionRange);
         return new vscode.Location(doc.uri, pos);
-    }
+    }    
 }

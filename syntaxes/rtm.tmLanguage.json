@@ -110,6 +110,9 @@
 					"end": "\\^{2}",
 					"patterns": [
 						{
+							"include": "#comments"
+						},
+						{
 							"match": "(\\^)(\\w+)(?=\\^)",
 							"captures": {
 								"2": {

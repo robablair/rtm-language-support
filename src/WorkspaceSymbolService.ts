@@ -136,10 +136,10 @@ const topLevelMatches: SymbolMatch[] = [entry, name];
 
 export class WorkspaceSymbolService {
 
-    private symbolCache = new Map<vscode.Uri, DocumentSymbolInfo[]>()
+    private symbolCache = new Map<string, DocumentSymbolInfo[]>()
 
     constructor() {
-        vscode.workspace.onDidChangeTextDocument((event) => this.symbolCache.delete(event.document.uri));
+        vscode.workspace.onDidChangeTextDocument((event) => this.symbolCache.delete(event.document.uri.path));
     }
 
     async getAllSymbols() {
@@ -156,12 +156,12 @@ export class WorkspaceSymbolService {
     }
 
     async getSymbolsFromFileUri(file: vscode.Uri) {
-        if (!this.symbolCache.has(file)) {
+        if (!this.symbolCache.has(file.path)) {
             const doc = await vscode.workspace.openTextDocument(file);
             const syms = this._parseText(file, doc.getText())
-            this.symbolCache.set(file, syms);
+            this.symbolCache.set(file.path, syms);
         }
-        return this.symbolCache.get(file) ?? [];
+        return this.symbolCache.get(file.path) ?? [];
     }
 
     private _parseText(uri: vscode.Uri, text: string): DocumentSymbolInfo[] {

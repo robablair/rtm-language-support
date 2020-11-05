@@ -42,7 +42,7 @@ export class SymbolLocator {
         let entries = docItems.filter(x => x.kind == DocumentSymbolKind.Entry);
         let entry = entries.find(x => x.range.contains(wordRange));
         let includes = entry?.children.filter(x => x.kind == DocumentSymbolKind.Include);
-        let def = includes?.map(async x => {
+        let results = includes?.map(async x => {
             let match = /(\w+|\*)\((.*)\)/.exec(x.name);
             if (!match)
                 return undefined;
@@ -57,7 +57,9 @@ export class SymbolLocator {
             def = nameSym?.children.find(x => x.kind == DocumentSymbolKind.Variable && x.name == variableName);
             return def;
 
-        }).filter(x => x != undefined);
+        });
+        let def = await Promise.all(results ?? [])
+        def = def.filter(x => x != undefined);
         if (!def || def.length != 1)
             return undefined;
         return def[0];

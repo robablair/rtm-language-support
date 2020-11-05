@@ -33,6 +33,15 @@ const codeStringEditMask: SymbolMatch = {
     nameGroup: 0
 }
 
+const dateEditMask: SymbolMatch = {
+    begin: /(?<=\s)D[AUEFDMYNHBL]+\b/,
+    kind: RtmSymbol.EditMask,
+    children: [],
+    endRegex: null,
+    maxChildren: null,
+    nameGroup: 0
+}
+
 const alphanumericEditMask: SymbolMatch = {
     begin: /(?<=\s)[AX]\d+\b/,
     kind: RtmSymbol.EditMask,
@@ -54,7 +63,7 @@ const numericEditMask: SymbolMatch = {
 const variable: SymbolMatch = {
     begin: /^\s*([A-Z](?:\.?\w)*)(?=\s+\w)/,
     kind: RtmSymbol.Variable,
-    children: [alphanumericEditMask, numericEditMask, codeStringEditMask],
+    children: [alphanumericEditMask, numericEditMask, dateEditMask, codeStringEditMask],
     endRegex: null,
     maxChildren: 1,
     nameGroup: 1

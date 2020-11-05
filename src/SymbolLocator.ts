@@ -19,7 +19,7 @@ export class SymbolLocator {
             def = this.findDefinitionOfProc(doc, wordAtPos, docSymbols);
             if (def)
                 return def;
-            def = await this.findDefinitionOfIncludedVariable(doc, wordAtPos, docSymbols);
+            def = await this.findIncludedDefinition(doc, wordAtPos, docSymbols);
             if (def)
                 return def;
             def = await this.findDefinitionOfOverlay(doc, wordAtPos, docSymbols);
@@ -30,17 +30,21 @@ export class SymbolLocator {
     }
 
     private findDefinitionOfVariable(doc: vscode.TextDocument, wordRange: vscode.Range, docItems: DocumentSymbolInfo[]) {
-        let entries = docItems.filter(x => x.kind == DocumentSymbolKind.Entry);
-        let entry = entries.find(x => x.range.contains(wordRange));
-        let data = entry?.children.find(x => x.kind == DocumentSymbolKind.Data);
-        let def = data?.children.find(x => x.name == doc.getText(wordRange))
+        let entry = docItems.find(x => x.kind == DocumentSymbolKind.Entry && x.range.contains(wordRange));
+        let data = entry?.children.find(x => x.kind == DocumentSymbolKind.Data); 
+        let def = data?.children.find(x => x.name == doc.getText(wordRange));
         return def;
     }
 
-    private async findDefinitionOfIncludedVariable(doc: vscode.TextDocument, wordRange: vscode.Range, docItems: DocumentSymbolInfo[]) {
-        let variableName = doc.getText(wordRange);
-        let entries = docItems.filter(x => x.kind == DocumentSymbolKind.Entry);
-        let entry = entries.find(x => x.range.contains(wordRange));
+    private findDefinitionOfProc(doc: vscode.TextDocument, wordRange: vscode.Range, docItems: DocumentSymbolInfo[]) {
+        let entry = docItems.find(x => x.kind == DocumentSymbolKind.Entry && x.range.contains(wordRange));
+        let def = entry?.children.find(x => x.kind == DocumentSymbolKind.Proc && x.name == doc.getText(wordRange));
+        return def;
+    }
+
+    private async findIncludedDefinition(doc: vscode.TextDocument, wordRange: vscode.Range, docItems: DocumentSymbolInfo[]) {
+        let wordName = doc.getText(wordRange);
+        let entry = docItems.find(x => x.kind == DocumentSymbolKind.Entry && x.range.contains(wordRange));
         let includes = entry?.children.filter(x => x.kind == DocumentSymbolKind.Include);
         let results = includes?.map(async x => {
             let match = /(\w+|\*)\((.*)\)/.exec(x.name);
@@ -48,15 +52,10 @@ export class SymbolLocator {
                 return undefined;
             let file = match[1];
             let includedName = match[2];
-            let nameSym = docItems.find(x => x.kind == DocumentSymbolKind.Name && x.name == includedName);
-            let def = nameSym?.children.find(x => x.kind == DocumentSymbolKind.Variable && x.name == variableName);
-            if (def)
-                return def;
-            let fileSymbols = await this.symbols.getSymbolsFromFileName(file);
-            nameSym = fileSymbols.find(x => x.kind == DocumentSymbolKind.Name && x.name == includedName);
-            def = nameSym?.children.find(x => x.kind == DocumentSymbolKind.Variable && x.name == variableName);
+            let fileSymbols = (file == '*') ? docItems : await this.symbols.getSymbolsFromFileName(file);
+            let nameSym = fileSymbols.find(x => x.kind == DocumentSymbolKind.Name && x.name == includedName);
+            let def = nameSym?.children.find(x => [DocumentSymbolKind.Proc, DocumentSymbolKind.Variable].includes(x.kind) && x.name == wordName);
             return def;
-
         });
         let def = await Promise.all(results ?? [])
         def = def.filter(x => x != undefined);
@@ -65,16 +64,8 @@ export class SymbolLocator {
         return def[0];
     }
 
-    private findDefinitionOfProc(doc: vscode.TextDocument, wordRange: vscode.Range, docItems: DocumentSymbolInfo[]) {
-        let entries = docItems.filter(x => x.kind == DocumentSymbolKind.Entry);
-        let entry = entries.find(x => x.range.contains(wordRange));
-        let def = entry?.children.find(x => x.kind == DocumentSymbolKind.Proc && x.name == doc.getText(wordRange));
-        return def;
-    }
-
     private async findDefinitionOfOverlay(doc: vscode.TextDocument, wordRange: vscode.Range, docItems: DocumentSymbolInfo[]) {
-        let entries = docItems.filter(x => x.kind == DocumentSymbolKind.Entry);
-        let entry = entries.find(x => x.range.contains(wordRange));
+        let entry = docItems.find(x => x.kind == DocumentSymbolKind.Entry && x.range.contains(wordRange));
         let ext = entry?.children.find(x => x.kind == DocumentSymbolKind.Ext);
         let refExt = ext?.children.find(x => x.name == doc.getText(wordRange));
         let allSymbols = await this.symbols.getAllSymbols();

@@ -22,6 +22,9 @@ export class SymbolLocator {
             def = await this.findIncludedDefinition(doc, wordAtPos, docSymbols);
             if (def)
                 return def;
+            def = await this.findNameOfInclude(wordAtPos, docSymbols);
+            if (def)
+                return def;
             def = await this.findDefinitionOfOverlay(doc, wordAtPos, docSymbols);
             if (def)
                 return def;
@@ -31,7 +34,7 @@ export class SymbolLocator {
 
     private findDefinitionOfVariable(doc: vscode.TextDocument, wordRange: vscode.Range, docItems: DocumentSymbolInfo[]) {
         let entry = docItems.find(x => x.kind == DocumentSymbolKind.Entry && x.range.contains(wordRange));
-        let data = entry?.children.find(x => x.kind == DocumentSymbolKind.Data); 
+        let data = entry?.children.find(x => x.kind == DocumentSymbolKind.Data);
         let def = data?.children.find(x => x.name == doc.getText(wordRange));
         return def;
     }
@@ -43,18 +46,16 @@ export class SymbolLocator {
     }
 
     private async findIncludedDefinition(doc: vscode.TextDocument, wordRange: vscode.Range, docItems: DocumentSymbolInfo[]) {
-        let wordName = doc.getText(wordRange);
         let entry = docItems.find(x => x.kind == DocumentSymbolKind.Entry && x.range.contains(wordRange));
         let includes = entry?.children.filter(x => x.kind == DocumentSymbolKind.Include);
         let results = includes?.map(async x => {
             let match = /(\w+|\*)\((.*)\)/.exec(x.name);
             if (!match)
                 return undefined;
-            let file = match[1];
-            let includedName = match[2];
+            let [file, name] = [match[1], match[2]];
             let fileSymbols = (file == '*') ? docItems : await this.symbols.getSymbolsFromFileName(file);
-            let nameSym = fileSymbols.find(x => x.kind == DocumentSymbolKind.Name && x.name == includedName);
-            let def = nameSym?.children.find(x => [DocumentSymbolKind.Proc, DocumentSymbolKind.Variable].includes(x.kind) && x.name == wordName);
+            let nameSym = fileSymbols.find(x => x.kind == DocumentSymbolKind.Name && x.name == name);
+            let def = nameSym?.children.find(x => [DocumentSymbolKind.Proc, DocumentSymbolKind.Variable].includes(x.kind) && x.name == doc.getText(wordRange));
             return def;
         });
         let def = await Promise.all(results ?? [])
@@ -62,6 +63,20 @@ export class SymbolLocator {
         if (!def || def.length != 1)
             return undefined;
         return def[0];
+    }
+
+    private async findNameOfInclude(wordRange: vscode.Range, docItems: DocumentSymbolInfo[]) {
+        let entry = docItems.find(x => x.kind == DocumentSymbolKind.Entry && x.range.contains(wordRange));
+        let include = entry?.children.find(x => x.kind == DocumentSymbolKind.Include && x.selectionRange.contains(wordRange));
+        if (!include)
+            return undefined
+        let match = /(\w+|\*)\((.*)\)/.exec(include.name);
+        if (!match)
+            return undefined;
+        let [file, name] = [match[1], match[2]];
+        let fileSymbols = (file == '*') ? docItems : await this.symbols.getSymbolsFromFileName(file);
+        let def = fileSymbols.find(x => x.kind == DocumentSymbolKind.Name && x.name == name);
+        return def;
     }
 
     private async findDefinitionOfOverlay(doc: vscode.TextDocument, wordRange: vscode.Range, docItems: DocumentSymbolInfo[]) {

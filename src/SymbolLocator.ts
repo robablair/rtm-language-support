@@ -13,18 +13,18 @@ export class SymbolLocator {
         const docSymbols = await this.symbols.getSymbolsFromFileUri(doc.uri);
         const wordAtPos = doc.getWordRangeAtPosition(pos);
         if (wordAtPos) {
-            let def = this.findDefinitionOfVariable(doc, wordAtPos, docSymbols);
-            if (def)
-                return def;
-            def = this.findDefinitionOfProc(doc, wordAtPos, docSymbols);
-            if (def)
-                return def;
-            def = await this.findDefinitionOfIncludedVariable(doc, wordAtPos, docSymbols);
-            if (def)
-                return def;
-            def = await this.findDefinitionOfOverlay(doc, wordAtPos, docSymbols);
-            if (def)
-                return def;
+            let searches = [
+                this.findDefinitionOfVariable,
+                this.findDefinitionOfProc,
+                this.findDefinitionOfIncludedVariable,
+                this.findDefinitionOfName,
+                this.findDefinitionOfOverlay
+            ]
+            for (let search of searches) {
+                let def = await search(doc, wordAtPos, docSymbols);
+                if (def)
+                    return def;
+            }
         }
         return null
     }
@@ -34,6 +34,13 @@ export class SymbolLocator {
         let entry = entries.find(x => x.range.contains(wordRange));
         let data = entry?.children.find(x => x.kind == DocumentSymbolKind.Data);
         let def = data?.children.find(x => x.name == doc.getText(wordRange))
+        return def;
+    }
+
+    private findDefinitionOfProc(doc: vscode.TextDocument, wordRange: vscode.Range, docItems: DocumentSymbolInfo[]) {
+        let entries = docItems.filter(x => x.kind == DocumentSymbolKind.Entry);
+        let entry = entries.find(x => x.range.contains(wordRange));
+        let def = entry?.children.find(x => x.kind == DocumentSymbolKind.Proc && x.name == doc.getText(wordRange));
         return def;
     }
 
@@ -63,10 +70,11 @@ export class SymbolLocator {
         return def[0];
     }
 
-    private findDefinitionOfProc(doc: vscode.TextDocument, wordRange: vscode.Range, docItems: DocumentSymbolInfo[]) {
+    private findDefinitionOfName(doc: vscode.TextDocument, wordRange: vscode.Range, docItems: DocumentSymbolInfo[]) {
         let entries = docItems.filter(x => x.kind == DocumentSymbolKind.Entry);
         let entry = entries.find(x => x.range.contains(wordRange));
-        let def = entry?.children.find(x => x.kind == DocumentSymbolKind.Proc && x.name == doc.getText(wordRange));
+        let data = entry?.children.find(x => x.kind == DocumentSymbolKind.Data);
+        let def = data?.children.find(x => x.name == doc.getText(wordRange))
         return def;
     }
 

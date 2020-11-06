@@ -6,6 +6,7 @@ import { WorkspaceSymbolProvider } from './WorkspaceSymbolProvider';
 import { DefinitionProvider } from './DefinitionProvider';
 import { WorkspaceSymbolService } from './WorkspaceSymbolService';
 import { SymbolLocator } from './SymbolLocator';
+import { ReferenceProvider } from './ReferenceProvider';
 
 const selector = { language: 'rtm', scheme: 'file' };
 
@@ -14,6 +15,7 @@ const symbolLocator = new SymbolLocator(symbolContainer)
 const docSymbolProvider = new DocumentSymbolProvider(symbolContainer);
 const workspaceSymbolProvider = new WorkspaceSymbolProvider(symbolContainer);
 const definitionProvider = new DefinitionProvider(symbolLocator);
+const referenceProvider = new ReferenceProvider(symbolContainer, symbolLocator)
 
 export function activate(context: vscode.ExtensionContext) {
 
@@ -44,4 +46,6 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(vscode.languages.registerWorkspaceSymbolProvider(workspaceSymbolProvider));
 
 	context.subscriptions.push(vscode.languages.registerDefinitionProvider(selector, definitionProvider));
+
+	context.subscriptions.push(vscode.languages.registerReferenceProvider(selector, referenceProvider))
 }

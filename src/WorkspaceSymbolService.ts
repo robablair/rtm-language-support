@@ -221,7 +221,8 @@ export class WorkspaceSymbolService {
                     tryAgain = true;
                 }
                 else if (nextMatch) {
-                    const docSym = this._buildDocSymbol(uri, line, offset, i, nextMatch);
+                    let parent = symbols.length > 0 ? symbols[symbols.length - 1] : undefined;
+                    const docSym = this._buildDocSymbol(uri, line, offset, i, nextMatch, parent);
                     offset += nextMatch.result.index + nextMatch.result[0].length;
                     if (symbols.length > 0)
                         symbols[symbols.length - 1].children.push(docSym);
